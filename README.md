@@ -1,4 +1,4 @@
-# 🥗 NutriTrack — Health & Nutrition Tracker
+#  NutriTrack — Health & Nutrition Tracker
 
 A multi-page web application for tracking daily food intake and nutrition, powered by the Spoonacular API.
 
