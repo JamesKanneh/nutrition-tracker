@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Log — NutriTrack</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --forest: #2d5016;
+            --forest-mid: #3d6b1f;
+            --forest-light: #4a7c2a;
+            --black: #0a0a0a;
+            --ash: #b0b7b0;
+            --ash-light: #d4d9d4;
+            --ash-dark: #7a827a;
+            --white: #f5f7f5;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--black);
+            color: var(--white);
+            min-height: 100vh;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(ellipse at 0% 80%, rgba(45,80,22,0.12) 0%, transparent 60%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 20px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            background: rgba(10,10,10,0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(176,183,176,0.1);
+        }
+
+        .nav-logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: var(--forest-light);
+            letter-spacing: 2px;
+            text-decoration: none;
+        }
+
+        .nav-logo span { color: var(--ash); }
+
+        .nav-links { display: flex; gap: 30px; list-style: none; }
+
+        .nav-links a {
+            color: var(--ash);
+            text-decoration: none;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: color 0.3s;
+            padding-bottom: 3px;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--forest-light);
+            border-bottom: 2px solid var(--forest-light);
+        }
+
+        main {
+            position: relative;
+            z-index: 1;
+            padding: 120px 50px 60px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 40px;
+        }
+
+        .page-header-left .page-tag {
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--forest-light);
+            margin-bottom: 10px;
+        }
+
+        .page-header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 900;
+        }
+
+        .clear-btn {
+            background: transparent;
+            color: #ff6b6b;
+            border: 1px solid rgba(255,107,107,0.3);
+            border-radius: 6px;
+            padding: 10px 20px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.85rem;
+            cursor: pointer;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: all 0.3s;
+        }
+
+        .clear-btn:hover {
+            background: rgba(255,107,107,0.1);
+            border-color: #ff6b6b;
+        }
+
+        /* Totals */
+        .totals-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+
+        .total-card {
+            background: rgba(176,183,176,0.05);
+            border: 1px solid rgba(176,183,176,0.1);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .total-card:first-child {
+            background: rgba(45,80,22,0.2);
+            border-color: rgba(74,124,42,0.3);
+        }
+
+        .total-label {
+            font-size: 0.75rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--ash-dark);
+            margin-bottom: 8px;
+        }
+
+        .total-value {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--forest-light);
+        }
+
+        .total-unit {
+            font-size: 0.8rem;
+            color: var(--ash-dark);
+        }
+
+        /* Log table */
+        .log-container {
+            background: rgba(176,183,176,0.05);
+            border: 1px solid rgba(176,183,176,0.1);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .log-table-header {
+            display: grid;
+            grid-template-columns: 1fr 80px 80px 80px 80px 50px;
+            gap: 10px;
+            padding: 15px 25px;
+            background: rgba(45,80,22,0.2);
+            border-bottom: 1px solid rgba(176,183,176,0.1);
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--ash-dark);
+        }
+
+        .log-empty {
+            text-align: center;
+            padding: 60px 30px;
+            color: var(--ash-dark);
+        }
+
+        .log-empty p { margin-bottom: 15px; font-size: 0.95rem; }
+
+        .log-empty a {
+            display: inline-block;
+            background: var(--forest);
+            color: var(--white);
+            text-decoration: none;
+            padding: 10px 24px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: background 0.3s;
+        }
+
+        .log-empty a:hover { background: var(--forest-light); }
+
+        .log-row {
+            display: grid;
+            grid-template-columns: 1fr 80px 80px 80px 80px 50px;
+            gap: 10px;
+            padding: 16px 25px;
+            border-bottom: 1px solid rgba(176,183,176,0.06);
+            align-items: center;
+            transition: background 0.2s;
+        }
+
+        .log-row:hover { background: rgba(45,80,22,0.08); }
+        .log-row:last-child { border-bottom: none; }
+
+        .log-food-name {
+            font-size: 0.95rem;
+            color: var(--white);
+            text-transform: capitalize;
+            font-weight: 400;
+        }
+
+        .log-nutrient {
+            font-size: 0.9rem;
+            color: var(--ash);
+            text-align: center;
+        }
+
+        .log-nutrient.calories { color: var(--forest-light); font-weight: 500; }
+
+        .remove-btn {
+            background: transparent;
+            color: var(--ash-dark);
+            border: none;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: color 0.2s;
+            text-align: center;
+            padding: 4px;
+        }
+
+        .remove-btn:hover { color: #ff6b6b; }
+
+        footer {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            padding: 30px;
+            border-top: 1px solid rgba(176,183,176,0.1);
+            color: var(--ash-dark);
+            font-size: 0.85rem;
+            margin-top: 60px;
+        }
+
+        footer a { color: var(--forest-light); text-decoration: none; }
+
+        @media (max-width: 768px) {
+            nav { padding: 15px 20px; }
+            .nav-links { display: none; }
+            main { padding: 100px 20px 40px; }
+            .totals-row { grid-template-columns: repeat(2, 1fr); }
+            .log-table-header { display: none; }
+            .log-row {
+                grid-template-columns: 1fr auto;
+                grid-template-rows: auto auto;
+            }
+            .page-header { flex-direction: column; align-items: flex-start; gap: 15px; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="index.html" class="nav-logo">Nutri<span>Track</span></a>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="dashboard.html">Dashboard</a></li>
+            <li><a href="search.html">Search</a></li>
+            <li><a href="log.html" class="active">My Log</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <div class="page-header">
+            <div class="page-header-left">
+                <div class="page-tag">📋 Daily Tracker</div>
+                <h1>My Food Log</h1>
+            </div>
+            <button class="clear-btn" onclick="clearLog()">Clear All</button>
+        </div>
+
+        <!-- Totals -->
+        <div class="totals-row">
+            <div class="total-card">
+                <div class="total-label">Calories</div>
+                <div><span class="total-value" id="totalCal">0</span> <span class="total-unit">kcal</span></div>
+            </div>
+            <div class="total-card">
+                <div class="total-label">Protein</div>
+                <div><span class="total-value" id="totalPro">0</span> <span class="total-unit">g</span></div>
+            </div>
+            <div class="total-card">
+                <div class="total-label">Carbs</div>
+                <div><span class="total-value" id="totalCarb">0</span> <span class="total-unit">g</span></div>
+            </div>
+            <div class="total-card">
+                <div class="total-label">Fat</div>
+                <div><span class="total-value" id="totalFat">0</span> <span class="total-unit">g</span></div>
+            </div>
+        </div>
+
+        <!-- Log Table -->
+        <div class="log-container">
+            <div class="log-table-header">
+                <span>Food</span>
+                <span style="text-align:center">Calories</span>
+                <span style="text-align:center">Protein</span>
+                <span style="text-align:center">Carbs</span>
+                <span style="text-align:center">Fat</span>
+                <span></span>
+            </div>
+            <div id="logBody"></div>
+        </div>
+    </main>
+
+    <footer>
+        <p>Powered by <a href="https://spoonacular.com/food-api" target="_blank">Spoonacular API</a> &nbsp;|&nbsp; NutriTrack &copy; 2026</p>
+    </footer>
+
+    <script>
+        let foodLog = JSON.parse(localStorage.getItem('foodLog')) || [];
+
+        function render() {
+            const totals = foodLog.reduce((acc, f) => {
+                acc.cal += f.calories || 0;
+                acc.pro += f.protein || 0;
+                acc.carb += f.carbs || 0;
+                acc.fat += f.fat || 0;
+                return acc;
+            }, { cal: 0, pro: 0, carb: 0, fat: 0 });
+
+            document.getElementById('totalCal').textContent = Math.round(totals.cal);
+            document.getElementById('totalPro').textContent = Math.round(totals.pro);
+            document.getElementById('totalCarb').textContent = Math.round(totals.carb);
+            document.getElementById('totalFat').textContent = Math.round(totals.fat);
+
+            const body = document.getElementById('logBody');
+
+            if (foodLog.length === 0) {
+                body.innerHTML = `
+                    <div class="log-empty">
+                        <p>Your log is empty. Start tracking your meals!</p>
+                        <a href="search.html">Search Foods →</a>
+                    </div>
+                `;
+                return;
+            }
+
+            body.innerHTML = foodLog.map(f => `
+                <div class="log-row">
+                    <span class="log-food-name">${f.name}</span>
+                    <span class="log-nutrient calories">${Math.round(f.calories)}</span>
+                    <span class="log-nutrient">${Math.round(f.protein)}g</span>
+                    <span class="log-nutrient">${Math.round(f.carbs)}g</span>
+                    <span class="log-nutrient">${Math.round(f.fat)}g</span>
+                    <button class="remove-btn" onclick="remove(${f.logId})" title="Remove">✕</button>
+                </div>
+            `).join('');
+        }
+
+        function remove(logId) {
+            foodLog = foodLog.filter(f => f.logId !== logId);
+            localStorage.setItem('foodLog', JSON.stringify(foodLog));
+            render();
+        }
+
+        function clearLog() {
+            if (foodLog.length === 0) return;
+            if (confirm('Clear your entire food log?')) {
+                foodLog = [];
+                localStorage.setItem('foodLog', JSON.stringify(foodLog));
+                render();
+            }
+        }
+
+        render();
+    </script>
+</body>
+</html>

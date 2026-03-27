@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard — NutriTrack</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --forest: #2d5016;
+            --forest-mid: #3d6b1f;
+            --forest-light: #4a7c2a;
+            --black: #0a0a0a;
+            --ash: #b0b7b0;
+            --ash-light: #d4d9d4;
+            --ash-dark: #7a827a;
+            --white: #f5f7f5;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--black);
+            color: var(--white);
+            min-height: 100vh;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(ellipse at 20% 50%, rgba(45,80,22,0.15) 0%, transparent 60%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 20px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            background: rgba(10,10,10,0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(176,183,176,0.1);
+        }
+
+        .nav-logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: var(--forest-light);
+            letter-spacing: 2px;
+            text-decoration: none;
+        }
+
+        .nav-logo span { color: var(--ash); }
+
+        .nav-links { display: flex; gap: 30px; list-style: none; }
+
+        .nav-links a {
+            color: var(--ash);
+            text-decoration: none;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: color 0.3s;
+            padding-bottom: 3px;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--forest-light);
+            border-bottom: 2px solid var(--forest-light);
+        }
+
+        main {
+            position: relative;
+            z-index: 1;
+            padding: 120px 50px 60px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        /* Greeting */
+        .greeting {
+            margin-bottom: 50px;
+        }
+
+        .greeting-tag {
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--forest-light);
+            margin-bottom: 10px;
+        }
+
+        .greeting h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2rem, 4vw, 3.5rem);
+            font-weight: 900;
+            color: var(--white);
+        }
+
+        .greeting h1 span { color: var(--forest-light); }
+
+        .greeting-date {
+            color: var(--ash-dark);
+            font-size: 0.9rem;
+            margin-top: 8px;
+            font-weight: 300;
+        }
+
+        /* Calorie Hero Card */
+        .calorie-hero {
+            background: linear-gradient(135deg, var(--forest) 0%, var(--forest-mid) 100%);
+            border-radius: 12px;
+            padding: 50px;
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(74,124,42,0.3);
+        }
+
+        .calorie-hero::before {
+            content: '';
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 200px;
+            height: 200px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 50%;
+        }
+
+        .calorie-hero::after {
+            content: '';
+            position: absolute;
+            bottom: -80px;
+            right: 100px;
+            width: 300px;
+            height: 300px;
+            background: rgba(255,255,255,0.02);
+            border-radius: 50%;
+        }
+
+        .calorie-label {
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: rgba(245,247,245,0.7);
+            margin-bottom: 15px;
+        }
+
+        .calorie-number {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(4rem, 8vw, 7rem);
+            font-weight: 900;
+            color: var(--white);
+            line-height: 1;
+            position: relative;
+            z-index: 1;
+        }
+
+        .calorie-unit {
+            font-size: 1.5rem;
+            color: rgba(245,247,245,0.6);
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 300;
+            margin-left: 10px;
+        }
+
+        .calorie-sub {
+            color: rgba(245,247,245,0.6);
+            font-size: 0.9rem;
+            margin-top: 15px;
+            font-weight: 300;
+        }
+
+        /* Macro Cards */
+        .macros-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .macro-card {
+            background: rgba(176,183,176,0.05);
+            border: 1px solid rgba(176,183,176,0.1);
+            border-radius: 10px;
+            padding: 25px;
+            transition: all 0.3s;
+        }
+
+        .macro-card:hover {
+            border-color: var(--forest-light);
+            background: rgba(45,80,22,0.1);
+        }
+
+        .macro-label {
+            font-size: 0.75rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--ash-dark);
+            margin-bottom: 10px;
+        }
+
+        .macro-value {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--forest-light);
+        }
+
+        .macro-unit {
+            font-size: 0.9rem;
+            color: var(--ash-dark);
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 300;
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .action-btn {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 20px 25px;
+            border-radius: 10px;
+            text-decoration: none;
+            border: 1px solid rgba(176,183,176,0.1);
+            background: rgba(176,183,176,0.05);
+            transition: all 0.3s;
+            color: var(--white);
+        }
+
+        .action-btn:hover {
+            border-color: var(--forest-light);
+            background: rgba(45,80,22,0.15);
+            transform: translateY(-2px);
+        }
+
+        .action-icon {
+            font-size: 1.8rem;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(45,80,22,0.3);
+            border-radius: 8px;
+        }
+
+        .action-text h3 {
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 3px;
+        }
+
+        .action-text p {
+            font-size: 0.8rem;
+            color: var(--ash-dark);
+            font-weight: 300;
+        }
+
+        /* Recent log preview */
+        .recent-section {
+            background: rgba(176,183,176,0.05);
+            border: 1px solid rgba(176,183,176,0.1);
+            border-radius: 10px;
+            padding: 25px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .section-header h2 {
+            font-size: 1rem;
+            font-weight: 500;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--ash);
+        }
+
+        .section-header a {
+            font-size: 0.8rem;
+            color: var(--forest-light);
+            text-decoration: none;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .log-preview {
+            font-size: 0.9rem;
+            color: var(--ash-dark);
+            font-weight: 300;
+            font-style: italic;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .log-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(176,183,176,0.08);
+        }
+
+        .log-item:last-child { border-bottom: none; }
+
+        .log-name {
+            font-size: 0.95rem;
+            color: var(--white);
+            font-weight: 400;
+            text-transform: capitalize;
+        }
+
+        .log-cal {
+            font-size: 0.85rem;
+            color: var(--forest-light);
+            font-weight: 500;
+        }
+
+        footer {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            padding: 30px;
+            border-top: 1px solid rgba(176,183,176,0.1);
+            color: var(--ash-dark);
+            font-size: 0.85rem;
+        }
+
+        footer a { color: var(--forest-light); text-decoration: none; }
+
+        @media (max-width: 768px) {
+            nav { padding: 15px 20px; }
+            .nav-links { display: none; }
+            main { padding: 100px 20px 40px; }
+            .macros-grid { grid-template-columns: repeat(3,1fr); }
+            .quick-actions { grid-template-columns: 1fr; }
+            .calorie-hero { padding: 30px; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="index.html" class="nav-logo">Nutri<span>Track</span></a>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="dashboard.html" class="active">Dashboard</a></li>
+            <li><a href="search.html">Search</a></li>
+            <li><a href="log.html">My Log</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <div class="greeting">
+            <div class="greeting-tag"> Welcome back</div>
+            <h1>Good <span id="timeGreeting">Morning</span>,<br>NutriTrack User</h1>
+            <div class="greeting-date" id="todayDate"></div>
+        </div>
+
+        <!-- Calorie Hero -->
+        <div class="calorie-hero">
+            <div class="calorie-label">Today's Total Calories</div>
+            <div>
+                <span class="calorie-number" id="dashCalories">0</span>
+                <span class="calorie-unit">kcal</span>
+            </div>
+            <div class="calorie-sub" id="calorieSub">No foods logged yet — start tracking below</div>
+        </div>
+
+        <!-- Macros -->
+        <div class="macros-grid">
+            <div class="macro-card">
+                <div class="macro-label">Protein</div>
+                <div><span class="macro-value" id="dashProtein">0</span><span class="macro-unit">g</span></div>
+            </div>
+            <div class="macro-card">
+                <div class="macro-label">Carbs</div>
+                <div><span class="macro-value" id="dashCarbs">0</span><span class="macro-unit">g</span></div>
+            </div>
+            <div class="macro-card">
+                <div class="macro-label">Fat</div>
+                <div><span class="macro-value" id="dashFat">0</span><span class="macro-unit">g</span></div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+            <a href="search.html" class="action-btn">
+                <div class="action-icon"></div>
+                <div class="action-text">
+                    <h3>Search Foods</h3>
+                    <p>Find and add foods to your log</p>
+                </div>
+            </a>
+            <a href="log.html" class="action-btn">
+                <div class="action-icon"></div>
+                <div class="action-text">
+                    <h3>View Full Log</h3>
+                    <p>See everything you've logged today</p>
+                </div>
+            </a>
+        </div>
+
+        <!-- Recent log -->
+        <div class="recent-section">
+            <div class="section-header">
+                <h2>Recent Foods</h2>
+                <a href="log.html">View All →</a>
+            </div>
+            <div id="recentLog"></div>
+        </div>
+    </main>
+
+    <footer>
+        <p>Powered by <a href="https://spoonacular.com/food-api" target="_blank">Spoonacular API</a> &nbsp;|&nbsp; NutriTrack &copy; 2026</p>
+    </footer>
+
+    <script>
+        // Greeting
+        const hour = new Date().getHours();
+        document.getElementById('timeGreeting').textContent =
+            hour < 12 ? 'Morning' : hour < 17 ? 'Afternoon' : 'Evening';
+
+        // Date
+        document.getElementById('todayDate').textContent = new Date().toLocaleDateString('en-US', {
+            weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+        });
+
+        // Load from localStorage
+        const foodLog = JSON.parse(localStorage.getItem('foodLog')) || [];
+
+        const totals = foodLog.reduce((acc, f) => {
+            acc.calories += f.calories || 0;
+            acc.protein += f.protein || 0;
+            acc.carbs += f.carbs || 0;
+            acc.fat += f.fat || 0;
+            return acc;
+        }, { calories: 0, protein: 0, carbs: 0, fat: 0 });
+
+        document.getElementById('dashCalories').textContent = Math.round(totals.calories);
+        document.getElementById('dashProtein').textContent = Math.round(totals.protein);
+        document.getElementById('dashCarbs').textContent = Math.round(totals.carbs);
+        document.getElementById('dashFat').textContent = Math.round(totals.fat);
+
+        if (foodLog.length > 0) {
+            document.getElementById('calorieSub').textContent = `${foodLog.length} food${foodLog.length > 1 ? 's' : ''} logged today`;
+        }
+
+        // Recent log
+        const recentEl = document.getElementById('recentLog');
+        if (foodLog.length === 0) {
+            recentEl.innerHTML = '<div class="log-preview">No foods logged yet. <a href="search.html" style="color:var(--forest-light)">Search for foods</a> to get started.</div>';
+        } else {
+            recentEl.innerHTML = foodLog.slice(-5).reverse().map(f => `
+                <div class="log-item">
+                    <span class="log-name">${f.name}</span>
+                    <span class="log-cal">${Math.round(f.calories)} kcal</span>
+                </div>
+            `).join('');
+        }
+    </script>
+</body>
+</html>

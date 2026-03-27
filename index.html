@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NutriTrack</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --forest: #2d5016;
+            --forest-mid: #3d6b1f;
+            --forest-light: #4a7c2a;
+            --black: #0a0a0a;
+            --ash: #b0b7b0;
+            --ash-light: #d4d9d4;
+            --ash-dark: #7a827a;
+            --white: #f5f7f5;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--black);
+            color: var(--white);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Background texture */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: 
+                radial-gradient(ellipse at 20% 50%, rgba(45,80,22,0.15) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 20%, rgba(45,80,22,0.1) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 20px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            background: rgba(10,10,10,0.9);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(176,183,176,0.1);
+        }
+
+        .nav-logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: var(--forest-light);
+            letter-spacing: 2px;
+        }
+
+        .nav-logo span { color: var(--ash); }
+
+        .nav-links { display: flex; gap: 30px; list-style: none; }
+
+        .nav-links a {
+            color: var(--ash);
+            text-decoration: none;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover { color: var(--forest-light); }
+
+        /* Hero */
+        .hero {
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 120px 50px 80px;
+        }
+
+        .hero-content { max-width: 650px; }
+
+        .hero-tag {
+            display: inline-block;
+            background: rgba(45,80,22,0.3);
+            border: 1px solid var(--forest-light);
+            color: var(--forest-light);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 30px;
+        }
+
+        .hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(3rem, 6vw, 5.5rem);
+            font-weight: 900;
+            line-height: 1.05;
+            margin-bottom: 25px;
+            color: var(--white);
+        }
+
+        .hero h1 em {
+            font-style: normal;
+            color: var(--forest-light);
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            color: var(--ash);
+            line-height: 1.8;
+            margin-bottom: 40px;
+            max-width: 500px;
+            font-weight: 300;
+        }
+
+        .hero-btns { display: flex; gap: 15px; flex-wrap: wrap; }
+
+        .btn-primary {
+            background: var(--forest);
+            color: var(--white);
+            padding: 14px 32px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            border: 2px solid var(--forest);
+            transition: all 0.3s;
+        }
+
+        .btn-primary:hover {
+            background: var(--forest-light);
+            border-color: var(--forest-light);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--ash);
+            padding: 14px 32px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            border: 2px solid rgba(176,183,176,0.3);
+            transition: all 0.3s;
+        }
+
+        .btn-outline:hover {
+            border-color: var(--ash);
+            color: var(--white);
+        }
+
+        /* Stats bar */
+        .stats-bar {
+            position: relative;
+            z-index: 1;
+            background: rgba(45,80,22,0.15);
+            border-top: 1px solid rgba(176,183,176,0.1);
+            border-bottom: 1px solid rgba(176,183,176,0.1);
+            padding: 40px 50px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 30px;
+        }
+
+        .stat {
+            text-align: center;
+            border-right: 1px solid rgba(176,183,176,0.1);
+            padding: 10px;
+        }
+
+        .stat:last-child { border-right: none; }
+
+        .stat-num {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--forest-light);
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--ash-dark);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-top: 5px;
+        }
+
+        /* Features */
+        .features {
+            position: relative;
+            z-index: 1;
+            padding: 80px 50px;
+        }
+
+        .features h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            color: var(--white);
+            margin-bottom: 50px;
+            text-align: center;
+        }
+
+        .features h2 span { color: var(--forest-light); }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: rgba(176,183,176,0.05);
+            border: 1px solid rgba(176,183,176,0.1);
+            border-radius: 8px;
+            padding: 30px;
+            transition: all 0.3s;
+        }
+
+        .feature-card:hover {
+            border-color: var(--forest-light);
+            background: rgba(45,80,22,0.1);
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            font-size: 2rem;
+            margin-bottom: 15px;
+        }
+
+        .feature-card h3 {
+            font-size: 1.1rem;
+            color: var(--white);
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+
+        .feature-card p {
+            font-size: 0.9rem;
+            color: var(--ash-dark);
+            line-height: 1.7;
+            font-weight: 300;
+        }
+
+        /* CTA */
+        .cta {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            padding: 80px 50px;
+            background: rgba(45,80,22,0.15);
+            border-top: 1px solid rgba(176,183,176,0.1);
+        }
+
+        .cta h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+
+        .cta p {
+            color: var(--ash);
+            margin-bottom: 30px;
+            font-size: 1rem;
+        }
+
+        footer {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            padding: 30px;
+            border-top: 1px solid rgba(176,183,176,0.1);
+            color: var(--ash-dark);
+            font-size: 0.85rem;
+        }
+
+        footer a { color: var(--forest-light); text-decoration: none; }
+
+        @media (max-width: 768px) {
+            nav { padding: 15px 20px; }
+            .nav-links { display: none; }
+            .hero { padding: 100px 20px 60px; }
+            .stats-bar { grid-template-columns: repeat(2,1fr); padding: 30px 20px; }
+            .features { padding: 60px 20px; }
+            .cta { padding: 60px 20px; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-logo">Nutri<span>Track</span></div>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="dashboard.html">Dashboard</a></li>
+            <li><a href="search.html">Search</a></li>
+            <li><a href="log.html">My Log</a></li>
+        </ul>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-tag">🌿 Nutrition Intelligence</div>
+            <h1>Fuel Your Body<br>with <em>Purpose</em></h1>
+            <p>Track every meal, understand your nutrition, and make data-driven decisions about what you eat. NutriTrack gives you the insight you need to reach your health goals.</p>
+            <div class="hero-btns">
+                <a href="dashboard.html" class="btn-primary">Go to Dashboard</a>
+                <a href="search.html" class="btn-outline">Search Foods</a>
+            </div>
+        </div>
+    </section>
+
+    <div class="stats-bar">
+        <div class="stat">
+            <div class="stat-num">1M+</div>
+            <div class="stat-label">Foods in Database</div>
+        </div>
+        <div class="stat">
+            <div class="stat-num">25+</div>
+            <div class="stat-label">Nutrients Tracked</div>
+        </div>
+        <div class="stat">
+            <div class="stat-num">100%</div>
+            <div class="stat-label">Free to Use</div>
+        </div>
+        <div class="stat">
+            <div class="stat-num">Real</div>
+            <div class="stat-label">Time Data</div>
+        </div>
+    </div>
+
+    <section class="features">
+        <h2>Everything You Need to <span>Stay on Track</span></h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon"></div>
+                <h3>Smart Food Search</h3>
+                <p>Search from a database of over 1 million foods. Get instant nutrition breakdowns per 100g.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"></div>
+                <h3>Daily Dashboard</h3>
+                <p>See your total calorie intake at a glance. Clean, minimal dashboard designed for quick insights.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"></div>
+                <h3>Food Log</h3>
+                <p>Keep a running log of everything you eat today. Add and remove items with a single click.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">↕</div>
+                <h3>Sort & Filter</h3>
+                <p>Sort search results by calories, protein, carbs, or fat. Find exactly what fits your goals.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta">
+        <h2>Start Tracking Today</h2>
+        <p>No sign-up required. Just search, track, and thrive.</p>
+        <a href="search.html" class="btn-primary">Search Foods Now</a>
+    </section>
+
+    <footer>
+        <p>Powered by <a href="https://spoonacular.com/food-api" target="_blank">Spoonacular API</a> &nbsp;|&nbsp; Built by James Kanneh &nbsp;|&nbsp; NutriTrack &copy; 2026</p>
+    </footer>
+</body>
+</html>

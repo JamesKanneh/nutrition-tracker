@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Foods — NutriTrack</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --forest: #2d5016;
+            --forest-mid: #3d6b1f;
+            --forest-light: #4a7c2a;
+            --black: #0a0a0a;
+            --ash: #b0b7b0;
+            --ash-light: #d4d9d4;
+            --ash-dark: #7a827a;
+            --white: #f5f7f5;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--black);
+            color: var(--white);
+            min-height: 100vh;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(ellipse at 80% 20%, rgba(45,80,22,0.12) 0%, transparent 60%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 20px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            background: rgba(10,10,10,0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(176,183,176,0.1);
+        }
+
+        .nav-logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: var(--forest-light);
+            letter-spacing: 2px;
+            text-decoration: none;
+        }
+
+        .nav-logo span { color: var(--ash); }
+
+        .nav-links { display: flex; gap: 30px; list-style: none; }
+
+        .nav-links a {
+            color: var(--ash);
+            text-decoration: none;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: color 0.3s;
+            padding-bottom: 3px;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--forest-light);
+            border-bottom: 2px solid var(--forest-light);
+        }
+
+        main {
+            position: relative;
+            z-index: 1;
+            padding: 120px 50px 60px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .page-header {
+            margin-bottom: 40px;
+        }
+
+        .page-tag {
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--forest-light);
+            margin-bottom: 10px;
+        }
+
+        .page-header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 900;
+        }
+
+        /* Search Box */
+        .search-box {
+            background: rgba(176,183,176,0.05);
+            border: 1px solid rgba(176,183,176,0.15);
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .search-input-row {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .search-input-row input {
+            flex: 1;
+            background: rgba(176,183,176,0.08);
+            border: 1px solid rgba(176,183,176,0.2);
+            border-radius: 8px;
+            padding: 14px 20px;
+            color: var(--white);
+            font-size: 1rem;
+            font-family: 'DM Sans', sans-serif;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .search-input-row input::placeholder { color: var(--ash-dark); }
+        .search-input-row input:focus { border-color: var(--forest-light); }
+
+        .search-btn {
+            background: var(--forest);
+            color: var(--white);
+            border: none;
+            border-radius: 8px;
+            padding: 14px 28px;
+            font-size: 0.9rem;
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 500;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .search-btn:hover { background: var(--forest-light); }
+
+        .filter-row {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .filter-label {
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--ash-dark);
+        }
+
+        .filter-row select {
+            background: rgba(176,183,176,0.08);
+            border: 1px solid rgba(176,183,176,0.2);
+            border-radius: 6px;
+            padding: 8px 14px;
+            color: var(--white);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.9rem;
+            cursor: pointer;
+            outline: none;
+        }
+
+        .filter-row select option { background: #1a1a1a; }
+
+        /* Error */
+        .error-msg {
+            background: rgba(200,50,50,0.1);
+            border: 1px solid rgba(200,50,50,0.3);
+            color: #ff6b6b;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 60px;
+            display: none;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(176,183,176,0.1);
+            border-top-color: var(--forest-light);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .loading p { color: var(--ash-dark); font-size: 0.9rem; }
+
+        /* Results */
+        #resultsSection { display: none; }
+
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .results-header h2 {
+            font-size: 1rem;
+            font-weight: 500;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--ash);
+        }
+
+        .results-count {
+            font-size: 0.8rem;
+            color: var(--ash-dark);
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 15px;
+        }
+
+        .food-card {
+            background: rgba(176,183,176,0.05);
+            border: 1px solid rgba(176,183,176,0.1);
+            border-radius: 10px;
+            padding: 20px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .food-card:hover {
+            border-color: var(--forest-light);
+            background: rgba(45,80,22,0.1);
+            transform: translateY(-3px);
+        }
+
+        .food-card img {
+            width: 100%;
+            height: 110px;
+            object-fit: cover;
+            border-radius: 6px;
+            margin-bottom: 12px;
+            background: rgba(176,183,176,0.1);
+        }
+
+        .food-card h3 {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--white);
+            margin-bottom: 5px;
+            text-transform: capitalize;
+        }
+
+        .food-per { font-size: 0.75rem; color: var(--ash-dark); margin-bottom: 12px; }
+
+        .nutrients {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+            margin-bottom: 14px;
+        }
+
+        .nutrient {
+            background: rgba(45,80,22,0.2);
+            border: 1px solid rgba(74,124,42,0.2);
+            padding: 5px 8px;
+            border-radius: 5px;
+            font-size: 0.75rem;
+            text-align: center;
+            color: var(--ash);
+        }
+
+        .nutrient span {
+            display: block;
+            font-weight: 500;
+            color: var(--forest-light);
+            font-size: 0.85rem;
+        }
+
+        .card-btns { display: flex; gap: 8px; }
+
+        .add-btn {
+            flex: 1;
+            padding: 9px;
+            background: var(--forest);
+            color: var(--white);
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            transition: background 0.3s;
+        }
+
+        .add-btn:hover { background: var(--forest-light); }
+
+        .detail-btn {
+            padding: 9px 14px;
+            background: transparent;
+            color: var(--ash);
+            border: 1px solid rgba(176,183,176,0.2);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-family: 'DM Sans', sans-serif;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+
+        .detail-btn:hover {
+            border-color: var(--ash);
+            color: var(--white);
+        }
+
+        footer {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            padding: 30px;
+            border-top: 1px solid rgba(176,183,176,0.1);
+            color: var(--ash-dark);
+            font-size: 0.85rem;
+            margin-top: 60px;
+        }
+
+        footer a { color: var(--forest-light); text-decoration: none; }
+
+        @media (max-width: 768px) {
+            nav { padding: 15px 20px; }
+            .nav-links { display: none; }
+            main { padding: 100px 20px 40px; }
+            .search-input-row { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="index.html" class="nav-logo">Nutri<span>Track</span></a>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="dashboard.html">Dashboard</a></li>
+            <li><a href="search.html" class="active">Search</a></li>
+            <li><a href="log.html">My Log</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <div class="page-header">
+            <div class="page-tag"> Food Database</div>
+            <h1>Search Foods</h1>
+        </div>
+
+        <div class="search-box">
+            <div class="search-input-row">
+                <input type="text" id="foodSearch" placeholder="Search for any food (e.g. chicken, apple, rice)..." />
+                <button class="search-btn" onclick="searchFood()">Search</button>
+            </div>
+            <div class="filter-row">
+                <span class="filter-label">Sort by:</span>
+                <select id="sortBy" onchange="sortResults()">
+                    <option value="calories">Calories</option>
+                    <option value="protein">Protein</option>
+                    <option value="carbs">Carbs</option>
+                    <option value="fat">Fat</option>
+                </select>
+                <select id="sortOrder" onchange="sortResults()">
+                    <option value="asc">Low → High</option>
+                    <option value="desc">High → Low</option>
+                </select>
+            </div>
+        </div>
+
+        <div id="errorMsg" class="error-msg"></div>
+
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <p>Searching the database...</p>
+        </div>
+
+        <div id="resultsSection">
+            <div class="results-header">
+                <h2>Results</h2>
+                <span class="results-count" id="resultsCount"></span>
+            </div>
+            <div class="results-grid" id="resultsGrid"></div>
+        </div>
+    </main>
+
+    <footer>
+        <p>Powered by <a href="https://spoonacular.com/food-api" target="_blank">Spoonacular API</a> &nbsp;|&nbsp; NutriTrack &copy; 2026</p>
+    </footer>
+
+    <script src="config.js"></script>
+    <script>
+        let searchResults = [];
+
+        document.getElementById('foodSearch').addEventListener('keypress', e => {
+            if (e.key === 'Enter') searchFood();
+        });
+
+        async function searchFood() {
+            const query = document.getElementById('foodSearch').value.trim();
+            if (!query) { showError('Please enter a food to search for.'); return; }
+
+            hideError();
+            showLoading(true);
+            document.getElementById('resultsSection').style.display = 'none';
+
+            try {
+                const res = await fetch(
+                    `https://api.spoonacular.com/food/ingredients/search?query=${encodeURIComponent(query)}&number=12&apiKey=${API_KEY}`
+                );
+                if (!res.ok) throw new Error(`${res.status}`);
+                const data = await res.json();
+
+                if (!data.results || data.results.length === 0) {
+                    showError('No results found. Try a different search term.');
+                    showLoading(false);
+                    return;
+                }
+
+                const promises = data.results.map(item => fetchNutrition(item.id, item.name, item.image));
+                searchResults = (await Promise.all(promises)).filter(Boolean);
+
+                showLoading(false);
+                renderResults();
+            } catch (err) {
+                showLoading(false);
+                if (err.message.includes('401') || err.message.includes('403')) {
+                    showError('Invalid API key. Please check config.js.');
+                } else if (err.message.includes('402')) {
+                    showError('API quota reached. Try again later.');
+                } else {
+                    showError('Connection error. Please check your internet and try again.');
+                }
+            }
+        }
+
+        async function fetchNutrition(id, name, image) {
+            try {
+                const res = await fetch(
+                    `https://api.spoonacular.com/food/ingredients/${id}/information?amount=100&unit=grams&apiKey=${API_KEY}`
+                );
+                if (!res.ok) return null;
+                const data = await res.json();
+                const n = data.nutrition?.nutrients || [];
+                const get = name => Math.round((n.find(x => x.name === name)?.amount || 0) * 10) / 10;
+                return {
+                    id: data.id,
+                    name: data.name,
+                    image: image ? `https://spoonacular.com/cdn/ingredients_100x100/${image}` : null,
+                    calories: get('Calories'),
+                    protein: get('Protein'),
+                    carbs: get('Carbohydrates'),
+                    fat: get('Fat')
+                };
+            } catch { return null; }
+        }
+
+        function renderResults() {
+            const grid = document.getElementById('resultsGrid');
+            document.getElementById('resultsCount').textContent = `${searchResults.length} items found`;
+            grid.innerHTML = searchResults.map(food => `
+                <div class="food-card">
+                    ${food.image ? `<img src="${food.image}" alt="${food.name}" onerror="this.style.display='none'">` : ''}
+                    <h3>${food.name}</h3>
+                    <div class="food-per">per 100g</div>
+                    <div class="nutrients">
+                        <div class="nutrient">Calories<span>${food.calories} kcal</span></div>
+                        <div class="nutrient">Protein<span>${food.protein}g</span></div>
+                        <div class="nutrient">Carbs<span>${food.carbs}g</span></div>
+                        <div class="nutrient">Fat<span>${food.fat}g</span></div>
+                    </div>
+                    <div class="card-btns">
+                        <button class="add-btn" onclick="addToLog(${food.id})">+ Add to Log</button>
+                        <a href="details.html?id=${food.id}&name=${encodeURIComponent(food.name)}" class="detail-btn">→</a>
+                    </div>
+                </div>
+            `).join('');
+            document.getElementById('resultsSection').style.display = 'block';
+        }
+
+        function sortResults() {
+            const by = document.getElementById('sortBy').value;
+            const order = document.getElementById('sortOrder').value;
+            searchResults.sort((a, b) => order === 'asc' ? a[by] - b[by] : b[by] - a[by]);
+            renderResults();
+        }
+
+        function addToLog(id) {
+            const food = searchResults.find(f => f.id === id);
+            if (!food) return;
+            const log = JSON.parse(localStorage.getItem('foodLog')) || [];
+            log.push({ ...food, logId: Date.now() });
+            localStorage.setItem('foodLog', JSON.stringify(log));
+            const btn = event.target;
+            btn.textContent = '✓ Added!';
+            btn.style.background = 'var(--forest-light)';
+            setTimeout(() => { btn.textContent = '+ Add to Log'; btn.style.background = ''; }, 1500);
+        }
+
+        function showError(msg) {
+            const el = document.getElementById('errorMsg');
+            el.textContent = msg;
+            el.style.display = 'block';
+        }
+
+        function hideError() { document.getElementById('errorMsg').style.display = 'none'; }
+        function showLoading(show) { document.getElementById('loading').style.display = show ? 'block' : 'none'; }
+    </script>
+</body>
+</html>

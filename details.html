@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Details — NutriTrack</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --forest: #2d5016;
+            --forest-mid: #3d6b1f;
+            --forest-light: #4a7c2a;
+            --black: #0a0a0a;
+            --ash: #b0b7b0;
+            --ash-light: #d4d9d4;
+            --ash-dark: #7a827a;
+            --white: #f5f7f5;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--black);
+            color: var(--white);
+            min-height: 100vh;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(ellipse at 50% 0%, rgba(45,80,22,0.2) 0%, transparent 60%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 20px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            background: rgba(10,10,10,0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(176,183,176,0.1);
+        }
+
+        .nav-logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: var(--forest-light);
+            letter-spacing: 2px;
+            text-decoration: none;
+        }
+
+        .nav-logo span { color: var(--ash); }
+
+        .nav-links { display: flex; gap: 30px; list-style: none; }
+
+        .nav-links a {
+            color: var(--ash);
+            text-decoration: none;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover { color: var(--forest-light); }
+
+        main {
+            position: relative;
+            z-index: 1;
+            padding: 120px 50px 60px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--ash-dark);
+            text-decoration: none;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 30px;
+            transition: color 0.3s;
+        }
+
+        .back-link:hover { color: var(--forest-light); }
+
+        .detail-card {
+            background: rgba(176,183,176,0.05);
+            border: 1px solid rgba(176,183,176,0.1);
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .detail-hero {
+            background: linear-gradient(135deg, var(--forest) 0%, var(--forest-mid) 100%);
+            padding: 40px;
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .detail-img {
+            width: 100px;
+            height: 100px;
+            border-radius: 10px;
+            object-fit: cover;
+            background: rgba(255,255,255,0.1);
+            flex-shrink: 0;
+        }
+
+        .detail-hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            font-weight: 900;
+            text-transform: capitalize;
+        }
+
+        .detail-per {
+            color: rgba(245,247,245,0.6);
+            font-size: 0.85rem;
+            margin-top: 5px;
+        }
+
+        .detail-body { padding: 30px; }
+
+        .nutrients-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+
+        .nutrient-row {
+            background: rgba(45,80,22,0.15);
+            border: 1px solid rgba(74,124,42,0.2);
+            border-radius: 8px;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nutrient-name {
+            font-size: 0.85rem;
+            color: var(--ash);
+            font-weight: 400;
+        }
+
+        .nutrient-val {
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--forest-light);
+        }
+
+        .add-to-log-btn {
+            width: 100%;
+            padding: 15px;
+            background: var(--forest);
+            color: var(--white);
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 500;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .add-to-log-btn:hover { background: var(--forest-light); }
+
+        .loading {
+            text-align: center;
+            padding: 80px;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(176,183,176,0.1);
+            border-top-color: var(--forest-light);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .error-box {
+            text-align: center;
+            padding: 60px;
+            color: var(--ash-dark);
+        }
+
+        footer {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            padding: 30px;
+            border-top: 1px solid rgba(176,183,176,0.1);
+            color: var(--ash-dark);
+            font-size: 0.85rem;
+            margin-top: 40px;
+        }
+
+        footer a { color: var(--forest-light); text-decoration: none; }
+
+        @media (max-width: 768px) {
+            nav { padding: 15px 20px; }
+            .nav-links { display: none; }
+            main { padding: 100px 20px 40px; }
+            .detail-hero { flex-direction: column; text-align: center; }
+            .nutrients-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="index.html" class="nav-logo">Nutri<span>Track</span></a>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="dashboard.html">Dashboard</a></li>
+            <li><a href="search.html">Search</a></li>
+            <li><a href="log.html">My Log</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <a href="search.html" class="back-link">← Back to Search</a>
+        <div id="content">
+            <div class="loading">
+                <div class="spinner"></div>
+                <p style="color:var(--ash-dark)">Loading food details...</p>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>Powered by <a href="https://spoonacular.com/food-api" target="_blank">Spoonacular API</a> &nbsp;|&nbsp; NutriTrack &copy; 2026</p>
+    </footer>
+
+    <script src="config.js"></script>
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const id = params.get('id');
+        const name = params.get('name') || 'Food';
+
+        async function loadDetails() {
+            if (!id) {
+                document.getElementById('content').innerHTML = '<div class="error-box">No food selected. <a href="search.html" style="color:var(--forest-light)">Go back to search.</a></div>';
+                return;
+            }
+
+            try {
+                const res = await fetch(
+                    `https://api.spoonacular.com/food/ingredients/${id}/information?amount=100&unit=grams&apiKey=${API_KEY}`
+                );
+                if (!res.ok) throw new Error(`${res.status}`);
+                const data = await res.json();
+                const nutrients = data.nutrition?.nutrients || [];
+
+                const get = (name) => {
+                    const n = nutrients.find(x => x.name === name);
+                    return n ? `${Math.round(n.amount * 10) / 10}${n.unit}` : 'N/A';
+                };
+
+                const getVal = (name) => {
+                    const n = nutrients.find(x => x.name === name);
+                    return n ? Math.round(n.amount * 10) / 10 : 0;
+                };
+
+                const imgUrl = data.image ? `https://spoonacular.com/cdn/ingredients_100x100/${data.image}` : '';
+
+                const foodData = {
+                    id: data.id,
+                    name: data.name,
+                    image: imgUrl,
+                    calories: getVal('Calories'),
+                    protein: getVal('Protein'),
+                    carbs: getVal('Carbohydrates'),
+                    fat: getVal('Fat')
+                };
+
+                localStorage.setItem('currentFood', JSON.stringify(foodData));
+
+                const displayNutrients = [
+                    'Calories', 'Protein', 'Carbohydrates', 'Fat', 'Fiber',
+                    'Sugar', 'Sodium', 'Potassium', 'Vitamin C', 'Calcium', 'Iron'
+                ];
+
+                document.getElementById('content').innerHTML = `
+                    <div class="detail-card">
+                        <div class="detail-hero">
+                            ${imgUrl ? `<img src="${imgUrl}" alt="${data.name}" class="detail-img" onerror="this.style.display='none'">` : ''}
+                            <div>
+                                <h1>${data.name}</h1>
+                                <div class="detail-per">Nutrition per 100g</div>
+                            </div>
+                        </div>
+                        <div class="detail-body">
+                            <div class="nutrients-grid">
+                                ${displayNutrients.map(n => {
+                                    const val = get(n);
+                                    if (val === 'N/A') return '';
+                                    return `
+                                        <div class="nutrient-row">
+                                            <span class="nutrient-name">${n}</span>
+                                            <span class="nutrient-val">${val}</span>
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                            <button class="add-to-log-btn" onclick="addToLog()">+ Add to Daily Log</button>
+                        </div>
+                    </div>
+                `;
+            } catch (err) {
+                document.getElementById('content').innerHTML = `
+                    <div class="error-box">
+                        <p>Failed to load food details.</p>
+                        <a href="search.html" style="color:var(--forest-light)">← Back to search</a>
+                    </div>
+                `;
+            }
+        }
+
+        function addToLog() {
+            const food = JSON.parse(localStorage.getItem('currentFood'));
+            if (!food) return;
+            const log = JSON.parse(localStorage.getItem('foodLog')) || [];
+            log.push({ ...food, logId: Date.now() });
+            localStorage.setItem('foodLog', JSON.stringify(log));
+            const btn = document.querySelector('.add-to-log-btn');
+            btn.textContent = '✓ Added to Log!';
+            btn.style.background = 'var(--forest-light)';
+            setTimeout(() => { btn.textContent = '+ Add to Daily Log'; btn.style.background = ''; }, 2000);
+        }
+
+        loadDetails();
+    </script>
+</body>
+</html>
