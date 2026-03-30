@@ -1,0 +1,61 @@
+/* theme.css - Shared theme variables for NutriTrack */
+
+/* Dark Mode (default) */
+:root {
+    --forest: #2d5016;
+    --forest-mid: #3d6b1f;
+    --forest-light: #4a7c2a;
+    --black: #0a0a0a;
+    --ash: #b0b7b0;
+    --ash-light: #d4d9d4;
+    --ash-dark: #7a827a;
+    --white: #f5f7f5;
+    --bg: #0a0a0a;
+    --card-bg: rgba(176,183,176,0.05);
+    --card-border: rgba(176,183,176,0.1);
+    --nav-bg: rgba(10,10,10,0.95);
+    --text-main: #f5f7f5;
+    --text-muted: #7a827a;
+    --input-bg: rgba(176,183,176,0.08);
+    --input-border: rgba(176,183,176,0.2);
+}
+
+/* Light Mode */
+[data-theme="light"] {
+    --black: #f0f4f0;
+    --bg: #f0f4f0;
+    --white: #1a1a1a;
+    --ash: #4a5a4a;
+    --ash-dark: #6a7a6a;
+    --ash-light: #3a4a3a;
+    --card-bg: rgba(255,255,255,0.9);
+    --card-border: rgba(45,80,22,0.15);
+    --nav-bg: rgba(240,244,240,0.97);
+    --text-main: #1a1a1a;
+    --text-muted: #5a6a5a;
+    --input-bg: rgba(255,255,255,0.8);
+    --input-border: rgba(45,80,22,0.2);
+}
+
+/* Theme Toggle Button */
+.theme-toggle {
+    background: transparent;
+    border: 1px solid var(--card-border);
+    border-radius: 20px;
+    padding: 6px 14px;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.8rem;
+    color: var(--ash);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.3s;
+}
+
+.theme-toggle:hover {
+    border-color: var(--forest-light);
+    color: var(--forest-light);
+}
+
+.theme-icon { font-size: 1rem; }
