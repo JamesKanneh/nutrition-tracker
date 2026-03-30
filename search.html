@@ -357,6 +357,7 @@
             .search-input-row { flex-direction: column; }
         }
     </style>
+    <link rel="stylesheet" href="theme.css">
 </head>
 <body>
     <nav>
@@ -367,11 +368,12 @@
             <li><a href="search.html" class="active">Search</a></li>
             <li><a href="log.html">My Log</a></li>
         </ul>
+        <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()"><span class="theme-icon"></span> Light</button>
     </nav>
 
     <main>
         <div class="page-header">
-            <div class="page-tag"> Food Database</div>
+            <div class="page-tag">🔍 Food Database</div>
             <h1>Search Foods</h1>
         </div>
 
@@ -533,5 +535,6 @@
         function hideError() { document.getElementById('errorMsg').style.display = 'none'; }
         function showLoading(show) { document.getElementById('loading').style.display = show ? 'block' : 'none'; }
     </script>
+    <script src="theme.js"></script>
 </body>
 </html>
