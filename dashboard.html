@@ -27,7 +27,83 @@
             min-height: 100vh;
         }
 
-        /* rest of your styles unchanged */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 20px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            background: rgba(10,10,10,0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(176,183,176,0.1);
+        }
+
+        .nav-logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: var(--forest-light);
+            letter-spacing: 2px;
+            text-decoration: none;
+        }
+
+        .nav-logo span { color: var(--ash); }
+
+        .nav-links { display: flex; gap: 30px; list-style: none; }
+
+        .nav-links a {
+            color: var(--ash);
+            text-decoration: none;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: color 0.3s;
+            padding-bottom: 3px;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--forest-light);
+            border-bottom: 2px solid var(--forest-light);
+        }
+
+        #themeToggle {
+            background: var(--forest);
+            border: none;
+            border-radius: 8px;
+            width: 32px;
+            height: 32px;
+            cursor: pointer;
+        }
+
+        main {
+            position: relative;
+            z-index: 1;
+            padding: 120px 50px 60px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        footer {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            padding: 30px;
+            border-top: 1px solid rgba(176,183,176,0.1);
+            color: var(--ash-dark);
+            font-size: 0.85rem;
+            margin-top: 60px;
+        }
+
+        footer a { color: var(--forest-light); text-decoration: none; }
+
+        @media (max-width: 768px) {
+            nav { padding: 15px 20px; }
+            .nav-links { display: none; }
+            main { padding: 100px 20px 40px; }
+        }
     </style>
 </head>
 <body>
@@ -45,18 +121,14 @@
     </nav>
 
     <main>
-        <!-- unchanged -->
+        <!-- Your existing Dashboard content goes here -->
+        <!-- For example, charts, summaries, and user info -->
     </main>
 
     <footer>
         <p>Powered by <a href="https://spoonacular.com/food-api" target="_blank">Spoonacular API</a> &nbsp;|&nbsp; NutriTrack &copy; 2026</p>
     </footer>
 
-    <script>
-        // your existing JS unchanged
-    </script>
-
     <script src="app.js"></script>
-
 </body>
 </html>
