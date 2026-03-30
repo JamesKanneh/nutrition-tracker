@@ -299,6 +299,7 @@
             .cta { padding: 60px 20px; }
         }
     </style>
+    <link rel="stylesheet" href="theme.css">
 </head>
 <body>
     <nav>
@@ -309,6 +310,7 @@
             <li><a href="search.html">Search</a></li>
             <li><a href="log.html">My Log</a></li>
         </ul>
+        <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()"><span class="theme-icon"></span> Light</button>
     </nav>
 
     <section class="hero">
@@ -361,7 +363,7 @@
                 <p>Keep a running log of everything you eat today. Add and remove items with a single click.</p>
             </div>
             <div class="feature-card">
-                <div class="feature-icon">↕</div>
+                <div class="feature-icon"></div>
                 <h3>Sort & Filter</h3>
                 <p>Sort search results by calories, protein, carbs, or fat. Find exactly what fits your goals.</p>
             </div>
@@ -377,5 +379,6 @@
     <footer>
         <p>Powered by <a href="https://spoonacular.com/food-api" target="_blank">Spoonacular API</a> &nbsp;|&nbsp; Built by James Kanneh &nbsp;|&nbsp; NutriTrack &copy; 2026</p>
     </footer>
+    <script src="theme.js"></script>
 </body>
 </html>
