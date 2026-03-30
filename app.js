@@ -1,31 +1,6 @@
 // NutriTrack - Health & Nutrition Tracker
 // Uses Spoonacular API: https://spoonacular.com/food-api
 
-// THEME TOGGLE
-const toggleBtn = document.getElementById("themeToggle");
-
-if (toggleBtn) {
-  toggleBtn.addEventListener("click", () => {
-    document.body.classList.toggle("dark-mode");
-
-    if (document.body.classList.contains("dark-mode")) {
-      localStorage.setItem("theme", "dark");
-    } else {
-      localStorage.setItem("theme", "light");
-    }
-  });
-}
-
-// LOAD SAVED THEME
-window.addEventListener("DOMContentLoaded", () => {
-  const savedTheme = localStorage.getItem("theme");
-
-  if (savedTheme === "dark") {
-    document.body.classList.add("dark-mode");
-  }
-});
-
-
 let searchResults = [];
 let foodLog = JSON.parse(localStorage.getItem('foodLog')) || [];
 
