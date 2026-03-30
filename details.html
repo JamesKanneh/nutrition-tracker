@@ -226,6 +226,7 @@
             .nutrients-grid { grid-template-columns: 1fr; }
         }
     </style>
+    <link rel="stylesheet" href="theme.css">
 </head>
 <body>
     <nav>
@@ -236,6 +237,7 @@
             <li><a href="search.html">Search</a></li>
             <li><a href="log.html">My Log</a></li>
         </ul>
+        <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()"><span class="theme-icon"></span> Light</button>
     </nav>
 
     <main>
@@ -351,5 +353,6 @@
 
         loadDetails();
     </script>
+    <script src="theme.js"></script>
 </body>
 </html>
