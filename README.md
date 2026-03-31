@@ -7,6 +7,7 @@ A multi-page web application for tracking daily food intake and nutrition, power
 - **Web Server 1:** http://44.201.170.157/nutritrack/index.html
 - **Web Server 2:** http://18.212.66.37/nutritrack/index.html
 - **Load Balancer:** http://34.238.43.183/nutritrack/index.html
+- **Demo Video:** https://youtu.be/Lr5BtPfgoa8
 
 ## Pages
 - **Home** (`index.html`) — Landing page with app overview
