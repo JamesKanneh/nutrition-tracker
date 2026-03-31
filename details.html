@@ -218,9 +218,41 @@
 
         footer a { color: var(--forest-light); text-decoration: none; }
 
+        .hamburger-menu {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            gap: 6px;
+            z-index: 101;
+        }
+
+        .hamburger-menu span {
+            width: 25px;
+            height: 3px;
+            background: var(--ash);
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .hamburger-menu.active span:nth-child(1) {
+            transform: rotate(45deg) translate(10px, 10px);
+        }
+
+        .hamburger-menu.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger-menu.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(7px, -7px);
+        }
+
         @media (max-width: 768px) {
             nav { padding: 15px 20px; }
-            .nav-links { display: none; }
+            .hamburger-menu { display: flex; }
+            .nav-links { display: none; position: fixed; top: 70px; left: 0; right: 0; flex-direction: column; background: rgba(10,10,10,0.95); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(176,183,176,0.1); gap: 0; z-index: 99; }
+            .nav-links.active { display: flex; }
+            .nav-links li { border-bottom: 1px solid rgba(176,183,176,0.05); }
+            .nav-links a { display: block; padding: 15px 20px; }
             main { padding: 100px 20px 40px; }
             .detail-hero { flex-direction: column; text-align: center; }
             .nutrients-grid { grid-template-columns: 1fr; }
@@ -237,7 +269,14 @@
             <li><a href="search.html">Search</a></li>
             <li><a href="log.html">My Log</a></li>
         </ul>
-        <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()"><span class="theme-icon"></span> Light</button>
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()"><span class="theme-icon"></span> Light</button>
+            <div class="hamburger-menu" id="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
     </nav>
 
     <main>
@@ -352,6 +391,24 @@
         }
 
         loadDetails();
+    </script>
+    <script>
+        const hamburger = document.getElementById('hamburger');
+        const navLinks = document.querySelector('.nav-links');
+        
+        if (hamburger) {
+            hamburger.addEventListener('click', () => {
+                hamburger.classList.toggle('active');
+                navLinks.classList.toggle('active');
+            });
+            
+            navLinks.addEventListener('click', (e) => {
+                if (e.target.tagName === 'A') {
+                    hamburger.classList.remove('active');
+                    navLinks.classList.remove('active');
+                }
+            });
+        }
     </script>
     <script src="theme.js"></script>
 </body>
